@@ -1,0 +1,323 @@
+// Exercise 1:
+
+CREATE DATABASE NB1;
+USE NB1;
+
+CREATE TABLE SEMP (EMPNO CHAR(4),EMPNAME CHAR(20),BASIC FLOAT,DEPTNO CHAR(2),DEPTHEAD CHAR(4));
+
+INSERT INTO SEMP VALUES ('0001','SUNIL',6000,'10',"NB");
+INSERT INTO SEMP VALUES ('0002','HIREN',8000,'20',"NB");
+INSERT INTO SEMP VALUES ('0003','ALI',4000,'10','0001',"NB");
+INSERT INTO SEMP VALUES ('0004','GEORGE',6000,'20','0002',"NB");
+
+SELECT * FROM SEMP;
+
+CREATE TABLE SDEPT (DEPTNO CHAR(2),DEPTNAME CHAR(15));
+
+INSERT INTO SDEPT VALUES ('10', 'Development');
+INSERT INTO SDEPT VALUES ('20', 'Training');
+
+SELECT * FROM SDEPT;
+
+CREATE TABLE S (SNO CHAR(2),SNAME VARCHAR(20),STATUS INT,CITY VARCHAR(20));
+
+INSERT INTO S VALUES ('S1','Rahul',20,'Mumbai');
+INSERT INTO S VALUES ('S2','Amit',10,'Delhi');
+INSERT INTO S VALUES ('S3','Priya',30,'Pune');
+INSERT INTO S VALUES ('S4','Karan',20,'Mumbai');
+INSERT INTO S VALUES ('S5','Sneha',30,'Bangalore');
+
+CREATE TABLE P (PNO CHAR(2),PNAME VARCHAR(20),COLOR VARCHAR(10),WEIGHT INT,CITY VARCHAR(20));
+
+INSERT INTO P VALUES ('P1','Shirt','Blue',12,'Mumbai');
+INSERT INTO P VALUES ('P2','Pant','Black',14,'Delhi');
+INSERT INTO P VALUES ('P3','Watch','Silver',13,'Pune');
+INSERT INTO P VALUES ('P4','Shoes','White',12,'Mumbai');
+INSERT INTO P VALUES ('P5','Goggles','Black',15,'Bangalore');
+
+CREATE TABLE J (JNO CHAR(2),JNAME VARCHAR(20),CITY VARCHAR(20));
+
+INSERT INTO J VALUES ('J1','MallProject','Mumbai');
+INSERT INTO J VALUES ('J2','FashionStore','Delhi');
+INSERT INTO J VALUES ('J3','OnlineShop','Pune');
+INSERT INTO J VALUES ('J4','RetailHub','Bangalore');
+
+CREATE TABLE SPJ(SNO CHAR(2),PNO CHAR(2),JNO CHAR(2),QTY INT);
+
+INSERT INTO SPJ VALUES ('S1','P1','J1',200);
+INSERT INTO SPJ VALUES ('S1','P2','J2',150);
+INSERT INTO SPJ VALUES ('S2','P3','J3',300);
+INSERT INTO SPJ VALUES ('S3','P4','J4',250);
+INSERT INTO SPJ VALUES ('S5','P5','J1',180);
+
+// Exercise 2:
+
+SELECT * FROM S ORDER BY CITY DESC;
+SELECT *FROM P ORDER BY CITY ASC, PNAME ASC;
+SELECT * FROM S WHERE STATUS BETWEEN 10 AND 20;
+SELECT PNAME, WEIGHT FROM P WHERE WEIGHT NOT BETWEEN 10 AND 15;
+SELECT PNAME FROM P WHERE PNAME LIKE 'S%';
+SELECT * FROM S WHERE CITY LIKE 'L%';
+SELECT * FROM J WHERE JNAME LIKE '__n%';
+
+// Exercise 3:
+
+1.
+SELECT CONCAT(UCASE(LEFT(SNAME,1)), LCASE(SUBSTRING(SNAME,2))) AS Supplier_Name
+FROM S;
+
+2.
+SELECT UPPER(SNAME) AS Supplier_Name
+FROM S;
+
+3.
+SELECT LOWER(SNAME) AS Supplier_Name
+FROM S;
+
+4.
+SELECT LPAD(SNAME,25,' ') AS Supplier_Name
+FROM S;
+
+5.
+SELECT REPLACE(SNAME,'la','ro') AS Supplier_Name
+FROM S;
+
+6.
+SELECT REPLACE(REPLACE(SNAME,'l','r'),'a','o') AS Supplier_Name
+FROM S;
+
+7.
+SELECT SNAME, LENGTH(SNAME) AS Name_Length
+FROM S;
+
+8.
+SELECT *
+FROM S
+WHERE SOUNDEX(SNAME) = SOUNDEX('BLOKE');
+
+9.
+SELECT SNAME,
+CASE STATUS
+WHEN 10 THEN 'Ten'
+WHEN 20 THEN 'Twenty'
+WHEN 30 THEN 'Thirty'
+ELSE 'Other'
+END AS Status_Text
+FROM S;
+
+10.
+SELECT DAYNAME(CURDATE()) AS Today;
+
+// Exercise 4:
+
+1. Display the minimum Status in the Supplier table
+SELECT MIN(STATUS) AS Minimum_Status FROM S;
+
+2. Display the maximum Weight in the Parts table
+SELECT MAX(WEIGHT) AS Maximum_Weight
+FROM P;
+
+3. Display the average Weight of the Parts
+SELECT AVG(WEIGHT) AS Average_Weight
+FROM P;
+
+4. Display the total Quantity sold for part 'P1'
+SELECT SUM(QTY) AS Total_Qty_P1
+FROM SPJ
+WHERE PNO = 'P1';
+
+5. Display the total Quantity sold for each part
+SELECT PNO, SUM(QTY) AS Total_Quantity
+FROM SPJ
+GROUP BY PNO;
+
+6. Display the average Quantity sold for each part
+SELECT PNO, AVG(QTY) AS Average_Quantity
+FROM SPJ
+GROUP BY PNO;
+
+7. Display the maximum Quantity sold for each part where max quantity > 800
+SELECT PNO, MAX(QTY) AS Max_Quantity
+FROM SPJ
+GROUP BY PNO
+HAVING MAX(QTY) > 800;
+
+8. Display the Status and the count of Suppliers with that Status
+SELECT STATUS, COUNT(*) AS Supplier_Count
+FROM S
+GROUP BY STATUS;
+
+9. Display the count of Projects going on in different cities
+SELECT CITY, COUNT(*) AS Project_Count
+FROM J
+GROUP BY CITY;
+
+11. Display Status and count of suppliers in word format
+SELECT 
+CASE STATUS
+WHEN 10 THEN 'Ten'
+WHEN 20 THEN 'Twenty'
+WHEN 30 THEN 'Thirty'
+END AS Status,
+COUNT(*) AS Count
+FROM S
+GROUP BY STATUS;
+
+Exercise 5:
+
+1. Display the Supplier name and the Quantity sold
+SELECT S.SNAME, SPJ.QTY
+FROM S
+JOIN SPJ ON S.SNO = SPJ.SNO;
+
+2. Display the Part name and Quantity sold
+SELECT P.PNAME, SPJ.QTY
+FROM P
+JOIN SPJ ON P.PNO = SPJ.PNO;
+
+3. Display the Project name and Quantity sold
+SELECT J.JNAME, SPJ.QTY
+FROM J
+JOIN SPJ ON J.JNO = SPJ.JNO;
+
+4. Display the Supplier name, Part name, Project name and Quantity sold
+SELECT S.SNAME, P.PNAME, J.JNAME, SPJ.QTY
+FROM SPJ
+JOIN S ON SPJ.SNO = S.SNO
+JOIN P ON SPJ.PNO = P.PNO
+JOIN J ON SPJ.JNO = J.JNO;
+
+5. Display the Supplier name supplying Parts to a Project in the same City
+SELECT S.SNAME
+FROM S
+JOIN SPJ ON S.SNO = SPJ.SNO
+JOIN J ON SPJ.JNO = J.JNO
+WHERE S.CITY = J.CITY;
+
+6. Display the Part name that is 'Red' in color and the Quantity sold
+SELECT P.PNAME, SPJ.QTY
+FROM P
+JOIN SPJ ON P.PNO = SPJ.PNO
+WHERE P.COLOR = 'Red';
+
+7. Display all the Quantity sold by Suppliers with Status = 20
+SELECT S.SNAME, SPJ.QTY
+FROM S
+JOIN SPJ ON S.SNO = SPJ.SNO
+WHERE S.STATUS = 20;
+
+8. Display all the Parts and Quantity with Weight > 14
+SELECT P.PNAME, SPJ.QTY
+FROM P
+JOIN SPJ ON P.PNO = SPJ.PNO
+WHERE P.WEIGHT > 14;
+
+9. Display Project names and City which bought more than 500 Parts
+SELECT J.JNAME, J.CITY
+FROM J
+JOIN SPJ ON J.JNO = SPJ.JNO
+GROUP BY J.JNAME, J.CITY
+HAVING SUM(SPJ.QTY) > 500;
+
+10. Display Part names and Quantity sold with Weight < 15
+SELECT P.PNAME, SPJ.QTY
+FROM P
+JOIN SPJ ON P.PNO = SPJ.PNO
+WHERE P.WEIGHT < 15;
+
+11. Display Employee names and the name of their Managers
+SELECT E1.EMPNAME AS Employee, E2.EMPNAME AS Manager
+FROM SEMP E1
+LEFT JOIN SEMP E2 ON E1.DEPTHEAD = E2.EMPNO;
+
+Exercise 6:
+
+1. Display all the Suppliers with the same Status as supplier 'CLARK'
+SELECT *
+FROM S
+WHERE STATUS = (
+    SELECT STATUS
+    FROM S
+    WHERE SNAME = 'CLARK'
+);
+
+2. Display all Employees in the same department as employee 'MILLER'
+SELECT *
+FROM SEMP
+WHERE DEPTNO = (
+    SELECT DEPTNO
+    FROM SEMP
+    WHERE EMPNAME = 'MILLER'
+);
+
+3. Display all Parts which have more Weight than all Red parts
+SELECT *
+FROM P
+WHERE WEIGHT > ALL (
+    SELECT WEIGHT
+    FROM P
+    WHERE COLOR = 'Red'
+);
+
+4. Display all Projects going on in the same city as project 'TAPE'
+SELECT *
+FROM J
+WHERE CITY = (
+    SELECT CITY
+    FROM J
+    WHERE JNAME = 'TAPE'
+);
+
+5. Display all Parts with Weight less than all Green parts
+SELECT *
+FROM P
+WHERE WEIGHT < ALL (
+    SELECT WEIGHT
+    FROM P
+    WHERE COLOR = 'Green'
+);
+
+6. Display the Supplier name who sold the maximum Quantity in one sale
+SELECT S.SNAME
+FROM S
+JOIN SPJ ON S.SNO = SPJ.SNO
+WHERE SPJ.QTY = (
+    SELECT MAX(QTY)
+    FROM SPJ
+);
+
+7. Display the Employee name with the minimum Salary
+SELECT EMPNAME
+FROM SEMP
+WHERE BASIC = (
+    SELECT MIN(BASIC)
+    FROM SEMP
+);
+
+8. Display the Supplier name who sold the maximum overall Quantity
+SELECT S.SNAME
+FROM S
+JOIN SPJ ON S.SNO = SPJ.SNO
+GROUP BY S.SNAME
+HAVING SUM(SPJ.QTY) = (
+    SELECT MAX(total_qty)
+    FROM (
+        SELECT SUM(QTY) AS total_qty
+        FROM SPJ
+        GROUP BY SNO
+    ) AS T
+);
+
+9. Display the Department name with the maximum number of Employees
+SELECT SD.DEPTNAME
+FROM SDEPT SD
+JOIN SEMP SE ON SD.DEPTNO = SE.DEPTNO
+GROUP BY SD.DEPTNAME
+HAVING COUNT(*) = (
+    SELECT MAX(emp_count)
+    FROM (
+        SELECT COUNT(*) AS emp_count
+        FROM SEMP
+        GROUP BY DEPTNO
+    ) AS T
+);
